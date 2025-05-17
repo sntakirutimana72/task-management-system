@@ -2,6 +2,8 @@ package com.taskmis.config.database;
 
 import com.taskmis.config.Env;
 
+import org.flywaydb.core.Flyway;
+
 public class Migration {
 
   // Prevent object instantiation
