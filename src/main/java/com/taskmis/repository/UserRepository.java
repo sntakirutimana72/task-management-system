@@ -16,7 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepository extends RepositoryAbstract<User> {
+  private static UserRepository instance;
   private final Logger logger = SystemLogger.getLogger(UserRepository.class);
+
+  private UserRepository() {}
+
+  public static synchronized UserRepository getInstance() {
+    if (instance == null)
+      instance = new UserRepository();
+    return instance;
+  }
 
   @Override
   public User findById(int id) throws ORMException, RecordNotFoundException {
@@ -39,11 +48,15 @@ public class UserRepository extends RepositoryAbstract<User> {
   public User findByEmail(String email) throws RecordNotFoundException, ORMException {
     try {
       return QuerySetSelector.find(
-        "SELECT id, hashed_password FROM users WHERE email = ?",
+        "SELECT id, name, hashed_password FROM users WHERE email = ?",
         statement -> statement.setString(1, email),
         rs -> {
           if (rs.next())
-            return new User(rs.getInt("id"), rs.getString("hashed_password"));
+            return new User(
+              rs.getInt("id"),
+              rs.getString("name"),
+              email,
+              rs.getString("hashed_password"));
           throw new RecordNotFoundException("<User email=`" + email + "`> not found");
         }
       );

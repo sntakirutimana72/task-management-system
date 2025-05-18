@@ -16,7 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectRepository extends RepositoryAbstract<Project> {
+  private static ProjectRepository instance;
   private final Logger logger = SystemLogger.getLogger(ProjectRepository.class);
+
+  private ProjectRepository() {}
+
+  public static synchronized ProjectRepository getInstance() {
+    if (instance == null)
+      instance = new ProjectRepository();
+    return instance;
+  }
 
   private Project extractProjectFromResultSet(ResultSet rs) throws SQLException {
     return new Project(
@@ -70,19 +79,32 @@ public class ProjectRepository extends RepositoryAbstract<Project> {
   }
 
   @Override
-  public boolean update(Project project) throws ORMException {
-    String sql = "UPDATE projects SET name = ?, description = ? WHERE id = ?";
-    try (
-      Connection conn = Connector.getConnection();
-      PreparedStatement stmt = conn.prepareStatement(sql)
-    ) {
-      stmt.setString(1, project.getName());
-      stmt.setString(2, project.getDescription());
-      stmt.setInt(3, project.getId());
+  public boolean update(Project project) {
+    return false;
+  }
+
+  public boolean rename(int id, String name) throws ORMException {
+    try (Connection conn = Connector.getConnection();
+         PreparedStatement stmt = conn.prepareStatement("UPDATE projects SET name = ? WHERE id = ?")) {
+      stmt.setString(1, name);
+      stmt.setInt(2, id);
 
       return stmt.executeUpdate() == 1;
     } catch (SQLException e) {
-      logger.error("update({}) - {}", project, e.getMessage());
+      logger.error("rename({}, {}) - {}", id, name, e.getMessage());
+      throw new ORMException(e.getMessage());
+    }
+  }
+
+  public boolean changeDescription(int id, String description) throws ORMException {
+    try (Connection conn = Connector.getConnection();
+         PreparedStatement stmt = conn.prepareStatement("UPDATE projects SET description = ? WHERE id = ?")) {
+      stmt.setString(1, description);
+      stmt.setInt(2, id);
+
+      return stmt.executeUpdate() == 1;
+    } catch (SQLException e) {
+      logger.error("changeDescription({}, {}) - {}", id, description, e.getMessage());
       throw new ORMException(e.getMessage());
     }
   }

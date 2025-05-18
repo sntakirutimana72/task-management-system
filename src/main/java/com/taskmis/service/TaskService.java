@@ -10,11 +10,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 
 public class TaskService extends AbstractService<Task> {
+  private static TaskService instance;
   private final AuthorizationService authorizationService;
 
-  public TaskService(TaskRepository taskRepository, AuthorizationService authorizationService) {
-    super(taskRepository);
-    this.authorizationService = authorizationService;
+  private TaskService() {
+    super(TaskRepository.getInstance());
+    this.authorizationService = AuthorizationService.getInstance();
+  }
+
+  public static synchronized TaskService getInstance() {
+    if (instance == null)
+      instance = new TaskService();
+    return instance;
   }
 
   @Override
@@ -36,12 +43,18 @@ public class TaskService extends AbstractService<Task> {
       title, description, status, priority, assignedTo, 1, projectId, dueDate));
   }
 
-  public boolean changeTitleAndDesc(HttpServletRequest request) throws ORMException {
+  public boolean changeTitle(HttpServletRequest request) throws ORMException {
     int id = Integer.parseInt(request.getParameter("id"));
     String title = request.getParameter("title");
+    // Change task title & description
+    return getRepository().updateTitle(id, title);
+  }
+
+  public boolean changeDescription(HttpServletRequest request) throws ORMException {
+    int id = Integer.parseInt(request.getParameter("id"));
     String description = request.getParameter("description");
     // Change task title & description
-    return getRepository().update(new Task(id, title, description));
+    return getRepository().updateDescription(id, description);
   }
 
   public boolean changeStatus(HttpServletRequest request) throws ORMException {
@@ -56,6 +69,13 @@ public class TaskService extends AbstractService<Task> {
     TaskPriority priority = TaskPriority.valueOf(request.getParameter("priority"));
     // Change task priority
     return getRepository().updatePriority(id, priority);
+  }
+
+  public boolean changeAssignee(HttpServletRequest request) throws ORMException {
+    int id = Integer.parseInt(request.getParameter("id"));
+    int assignedTo = Integer.parseInt(request.getParameter("assignedTo"));
+    // Change task assignee
+    return getRepository().updateAssignee(id, assignedTo);
   }
 
   public boolean changeProject(HttpServletRequest request) throws ORMException {

@@ -46,4 +46,4 @@ build/
 .DS_Store
 
 # Local Env variables
-.env.local
+**/.env.local

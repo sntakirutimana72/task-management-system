@@ -72,7 +72,7 @@ CREATE TABLE tasks (
   status task_status NOT NULL DEFAULT 'PENDING',
   priority task_priorities NOT NULL DEFAULT 'LOW',
   created_by INT NOT NULL REFERENCES users(id),
-  assigned_to IN NOT NULL REFERENCES users(id),
+  assigned_to INT NOT NULL REFERENCES users(id),
   project_id INT NOT NULL REFERENCES projects(id),
   due_date DATE NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

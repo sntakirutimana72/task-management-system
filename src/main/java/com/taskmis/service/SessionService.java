@@ -1,5 +1,6 @@
 package com.taskmis.service;
 
+import com.taskmis.DTO.SessionUserDTO;
 import com.taskmis.models.User;
 import com.taskmis.repository.UserRepository;
 
@@ -7,10 +8,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 public class SessionService {
+  private static SessionService instance;
   private final UserRepository userRepository;
 
-  public SessionService(UserRepository userRepository) {
-    this.userRepository = userRepository;
+  private SessionService() {
+    this.userRepository = UserRepository.getInstance();
+  }
+
+  public static synchronized SessionService getInstance() {
+    if (instance == null)
+      instance = new SessionService();
+    return instance;
   }
 
   public boolean authenticate(HttpServletRequest request) {
@@ -19,7 +27,8 @@ public class SessionService {
       boolean authenticated = user.getHashedPassword().equals(request.getParameter("password"));
 
       if (authenticated)
-        request.getSession().setAttribute("id", user.getId());
+        request.getSession().setAttribute(
+          "user", new SessionUserDTO(user.getId(), user.getName(), user.getEmail()));
       return authenticated;
     } catch (Exception ignored) {
       return false;
@@ -28,7 +37,7 @@ public class SessionService {
 
   public boolean destroy(HttpServletRequest request) {
     HttpSession session = request.getSession(false);
-    if (session == null)
+    if (session == null || session.getAttribute("user") == null)
       return false;
 
     session.invalidate();
@@ -36,6 +45,7 @@ public class SessionService {
   }
 
   public boolean isAuthenticated(HttpServletRequest request) {
-    return request.getSession(false) != null;
+    HttpSession session = request.getSession(false);
+    return session != null && session.getAttribute("user") != null;
   }
 }

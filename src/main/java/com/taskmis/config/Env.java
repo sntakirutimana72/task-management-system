@@ -9,7 +9,7 @@ public final class Env {
 
   // Load environment local file
   private static final Dotenv dotenv = Dotenv.configure()
-    .filename("/src/main/resources/com/taskmis/.env.local")
+    .filename(".env.local")
     .load();
 
   // Database Configuration

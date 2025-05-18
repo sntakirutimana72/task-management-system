@@ -21,8 +21,8 @@ public class User extends NameableEntity {
   }
 
   // Query for session
-  public User(int id, String hashedPassword) {
-    this(id, null, null, null, null);
+  public User(int id, String name, String email, String hashedPassword) {
+    this(id, name, email, null, null);
     this.hashedPassword = hashedPassword;
   }
 

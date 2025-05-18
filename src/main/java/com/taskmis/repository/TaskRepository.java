@@ -19,7 +19,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TaskRepository extends RepositoryAbstract<Task> {
+  private static TaskRepository instance;
   private final Logger logger = SystemLogger.getLogger(TaskRepository.class);
+
+  private TaskRepository() {}
+
+  public static synchronized TaskRepository getInstance() {
+    if (instance == null)
+      instance = new TaskRepository();
+    return instance;
+  }
 
   @Override
   public Task findById(int id) throws ORMException, RecordNotFoundException {
@@ -86,19 +95,38 @@ public class TaskRepository extends RepositoryAbstract<Task> {
   }
 
   @Override
-  public boolean update(Task task) throws ORMException {
-    String sql = "UPDATE tasks SET title = ?, description = ? WHERE id = ?";
+  public boolean update(Task task) {
+    return false;
+  }
+
+  public boolean updateTitle(int id, String title) throws ORMException {
+    String sql = "UPDATE tasks SET title = ? WHERE id = ?";
     try (
       Connection conn = Connector.getConnection();
       PreparedStatement stmt = conn.prepareStatement(sql)
     ) {
-      stmt.setString(1, task.getTitle());
-      stmt.setString(2, task.getDescription());
-      stmt.setInt(3, task.getId());
+      stmt.setString(1, title);
+      stmt.setInt(2, id);
 
       return stmt.executeUpdate() == 1;
     } catch (SQLException e) {
-      logger.error("update({}) - {}", task, e.getMessage());
+      logger.error("updateTitle({}, {}) - {}", id, title, e.getMessage());
+      throw new ORMException(e.getMessage());
+    }
+  }
+
+  public boolean updateDescription(int id, String description) throws ORMException {
+    String sql = "UPDATE tasks SET description = ? WHERE id = ?";
+    try (
+      Connection conn = Connector.getConnection();
+      PreparedStatement stmt = conn.prepareStatement(sql)
+    ) {
+      stmt.setString(1, description);
+      stmt.setInt(2, id);
+
+      return stmt.executeUpdate() == 1;
+    } catch (SQLException e) {
+      logger.error("updateDescription({}, {}) - {}", id, description, e.getMessage());
       throw new ORMException(e.getMessage());
     }
   }
@@ -144,6 +172,21 @@ public class TaskRepository extends RepositoryAbstract<Task> {
       return stmt.executeUpdate() == 1;
     } catch (SQLException e) {
       logger.error("updateProject({}, {}) - {}", id, projectId, e.getMessage());
+      throw new ORMException(e.getMessage());
+    }
+  }
+
+  public boolean updateAssignee(int id, int assignedTo) throws ORMException {
+    try (
+      Connection conn = Connector.getConnection();
+      PreparedStatement stmt = conn.prepareStatement("UPDATE tasks SET assignee_to = ? WHERE id = ?")
+    ) {
+      stmt.setInt(1, assignedTo);
+      stmt.setInt(2, id);
+
+      return stmt.executeUpdate() == 1;
+    } catch (SQLException e) {
+      logger.error("updateAssignee({}, {}) - {}", id, assignedTo, e.getMessage());
       throw new ORMException(e.getMessage());
     }
   }
