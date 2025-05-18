@@ -12,7 +12,7 @@ public class Task extends Entity {
   @Getter private final TaskStatus status;
   @Getter private final TaskPriority priority;
 
-  // Used for querying records
+  // Used when querying record
   public Task(int id, String title, String description,
               TaskStatus status, TaskPriority priority,
               int assignedTo, int createdBy, int projectId,
@@ -35,5 +35,10 @@ public class Task extends Entity {
               int assignedTo, int createdBy, int projectId,
               LocalDate dueDate) {
     this(-1, title, description, status, priority, assignedTo, createdBy, projectId, dueDate, null, null);
+  }
+
+  // Used when updating title & description
+  public Task(int id, String title, String description) {
+    this(id, title, description, null, null, -1, -1, -1, null, null, null);
   }
 }

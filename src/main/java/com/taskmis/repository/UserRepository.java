@@ -36,14 +36,14 @@ public class UserRepository extends RepositoryAbstract<User> {
     }
   }
 
-  public String findByEmail(String email) throws RecordNotFoundException, ORMException {
+  public User findByEmail(String email) throws RecordNotFoundException, ORMException {
     try {
       return QuerySetSelector.find(
-        "SELECT hashed_password FROM users WHERE email = ?",
+        "SELECT id, hashed_password FROM users WHERE email = ?",
         statement -> statement.setString(1, email),
         rs -> {
           if (rs.next())
-            return rs.getString("hashed_password");
+            return new User(rs.getInt("id"), rs.getString("hashed_password"));
           throw new RecordNotFoundException("<User email=`" + email + "`> not found");
         }
       );

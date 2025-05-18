@@ -20,6 +20,12 @@ public class User extends NameableEntity {
     this(id, name, email, null, null);
   }
 
+  // Query for session
+  public User(int id, String hashedPassword) {
+    this(id, null, null, null, null);
+    this.hashedPassword = hashedPassword;
+  }
+
   // Used only creating a record
   public User(String name, String email, String password) {
     this(-1, name, email, null, null);

@@ -9,7 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public abstract class RepositoryAbstract<D extends Entity> implements Repository<D> {
+public abstract class RepositoryAbstract<D> implements Repository<D> {
   @Override
   public boolean destroy(int id, String table) throws ORMException {
     try (
