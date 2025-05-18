@@ -8,7 +8,7 @@ public class Project extends NameableEntity {
   @Getter private final int createdBy;
   @Getter private final String description;
 
-  public Project(int id, String name, int createdBy, String description,
+  public Project(int id, String name, String description, int createdBy,
                  LocalDateTime createdAt, LocalDateTime updatedAt) {
     super(id, name, createdAt, updatedAt);
 
