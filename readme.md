@@ -41,7 +41,7 @@ This lab project includes:
 
 This application follows the MVC (Model-View-Controller) architecture with a DAO (Data Access Object) layer for persistence.
 
-- Model: Java classes representing entities (e.g., Patient, Employee).
+- Model: Java classes representing entities (e.g., Task, Project, User).
 
 - DAO: Encapsulates database logic (e.g., TaskRepository, ProjectRepository).
 
