@@ -1,4 +1,4 @@
-package com.taskmis.controller;
+package com.taskmis.controller.listeners;
 
 import com.taskmis.config.database.Migration;
 import com.taskmis.util.logger.SystemLogger;
